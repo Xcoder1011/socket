@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BC003A2F1F4A812E00EC8498 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A2B1F4A812E00EC8498 /* GCDAsyncSocket.m */; };
+		BC003A301F4A812E00EC8498 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A2D1F4A812E00EC8498 /* GCDAsyncUdpSocket.m */; };
+		BC003A371F4AA3A300EC8498 /* SKServerSocketConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A361F4AA3A300EC8498 /* SKServerSocketConnection.m */; };
+		BC003A3A1F4AA3C900EC8498 /* SKServerSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A391F4AA3C900EC8498 /* SKServerSocketManager.m */; };
 		BC3A93A81F46C59E00B26C1B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3A93A71F46C59E00B26C1B /* AppDelegate.m */; };
 		BC3A93AB1F46C59E00B26C1B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3A93AA1F46C59E00B26C1B /* main.m */; };
 		BC3A93AE1F46C59E00B26C1B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3A93AD1F46C59E00B26C1B /* ViewController.m */; };
@@ -15,6 +19,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BC003A2A1F4A812E00EC8498 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
+		BC003A2B1F4A812E00EC8498 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		BC003A2C1F4A812E00EC8498 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
+		BC003A2D1F4A812E00EC8498 /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
+		BC003A351F4AA3A300EC8498 /* SKServerSocketConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKServerSocketConnection.h; sourceTree = "<group>"; };
+		BC003A361F4AA3A300EC8498 /* SKServerSocketConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKServerSocketConnection.m; sourceTree = "<group>"; };
+		BC003A381F4AA3C900EC8498 /* SKServerSocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKServerSocketManager.h; sourceTree = "<group>"; };
+		BC003A391F4AA3C900EC8498 /* SKServerSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKServerSocketManager.m; sourceTree = "<group>"; };
 		BC3A93A31F46C59E00B26C1B /* Server_Socket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Server_Socket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC3A93A61F46C59E00B26C1B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BC3A93A71F46C59E00B26C1B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -37,6 +49,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BC003A281F4A812E00EC8498 /* GCD */ = {
+			isa = PBXGroup;
+			children = (
+				BC003A2A1F4A812E00EC8498 /* GCDAsyncSocket.h */,
+				BC003A2B1F4A812E00EC8498 /* GCDAsyncSocket.m */,
+				BC003A2C1F4A812E00EC8498 /* GCDAsyncUdpSocket.h */,
+				BC003A2D1F4A812E00EC8498 /* GCDAsyncUdpSocket.m */,
+			);
+			path = GCD;
+			sourceTree = "<group>";
+		};
+		BC003A341F4AA3A300EC8498 /* SKServerSocket */ = {
+			isa = PBXGroup;
+			children = (
+				BC003A381F4AA3C900EC8498 /* SKServerSocketManager.h */,
+				BC003A391F4AA3C900EC8498 /* SKServerSocketManager.m */,
+				BC003A351F4AA3A300EC8498 /* SKServerSocketConnection.h */,
+				BC003A361F4AA3A300EC8498 /* SKServerSocketConnection.m */,
+			);
+			path = SKServerSocket;
+			sourceTree = "<group>";
+		};
 		BC3A939A1F46C59D00B26C1B = {
 			isa = PBXGroup;
 			children = (
@@ -60,6 +94,8 @@
 				BC3A93A71F46C59E00B26C1B /* AppDelegate.m */,
 				BC3A93AC1F46C59E00B26C1B /* ViewController.h */,
 				BC3A93AD1F46C59E00B26C1B /* ViewController.m */,
+				BC003A341F4AA3A300EC8498 /* SKServerSocket */,
+				BC003A281F4A812E00EC8498 /* GCD */,
 				BC3A93BB1F46C6EC00B26C1B /* Other */,
 				BC3A93A91F46C59E00B26C1B /* Supporting Files */,
 			);
@@ -154,8 +190,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC003A2F1F4A812E00EC8498 /* GCDAsyncSocket.m in Sources */,
+				BC003A371F4AA3A300EC8498 /* SKServerSocketConnection.m in Sources */,
+				BC003A301F4A812E00EC8498 /* GCDAsyncUdpSocket.m in Sources */,
 				BC3A93AE1F46C59E00B26C1B /* ViewController.m in Sources */,
 				BC3A93AB1F46C59E00B26C1B /* main.m in Sources */,
+				BC003A3A1F4AA3C900EC8498 /* SKServerSocketManager.m in Sources */,
 				BC3A93A81F46C59E00B26C1B /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -307,6 +347,7 @@
 				BC3A93B91F46C59E00B26C1B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
