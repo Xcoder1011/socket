@@ -8,11 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#ifdef DEBUG
-# define DDLog(format, ...) NSLog((@"[文件名:%s]" "[函数名:%s]" "[行号:%d]" format), __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__);
-#else
-# define DDLog(...);
-#endif
 
 @interface SKServerSocketManager : NSObject
 

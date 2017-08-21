@@ -8,14 +8,16 @@
 
 #import "SKServerSocketManager.h"
 #import "GCDAsyncSocket.h"
+#import "SKServerSocketConnection.h"
 
-@interface SKServerSocketManager () <GCDAsyncSocketDelegate>
+
+@interface SKServerSocketManager () <GCDAsyncSocketDelegate, SKServerSocketConnectionDelegate>
 
 @property (nonatomic, strong) GCDAsyncSocket *tcpSocket;
 
 @property (nonatomic, strong) dispatch_queue_t socketQueue;
 
-@property (nonatomic, strong, readwrite) NSMutableArray *connectedSockets;
+@property (nonatomic, strong, readwrite) NSMutableArray <SKServerSocketConnection *> *connectedSockets;
 
 @end
 
@@ -52,8 +54,11 @@
     
     if (error) {
         NSLog(@"监听失败:%@",error);
+
     } else {
         NSLog(@"监听成功:%@",error);
+        NSLog(@"tcp server started on port %hu", [_tcpSocket localPort]);
+
     }
 }
 
@@ -69,8 +74,16 @@
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket;{
     DDLog(@"didAcceptNewSocket");
     
-    [self.connectedSockets addObject:newSocket];
-    [newSocket readDataWithTimeout:-1 tag:0];
+    @synchronized (_connectedSockets) {
+        
+        SKServerSocketConnection *connection = [[SKServerSocketConnection alloc] initWithAsyncSocket:newSocket configQueue:self.socketQueue];
+        connection.delegate = self;
+        
+        [_connectedSockets addObject:connection];
+        
+        [connection start];
+    }
+    
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port {
@@ -117,7 +130,6 @@
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(nullable NSError *)err {
     DDLog(@"socketDidDisconnect");
-    
     [self.connectedSockets removeObject:sock];
 }
 
@@ -126,10 +138,14 @@
 
 }
 
-- (void)socket:(GCDAsyncSocket *)sock didReceiveTrust:(SecTrustRef)trust
-completionHandler:(void (^)(BOOL shouldTrustPeer))completionHandler {
 
-    DDLog(@"didReceiveTrust");
+#pragma mark -- SKServerSocketConnectionDelegate
+
+- (void)didDisConnect:(SKServerSocketConnection *)con withError:(NSError *)error {
+
+    @synchronized(_connectedSockets) {
+        [_connectedSockets removeObject:con];
+    }
 }
 
 
