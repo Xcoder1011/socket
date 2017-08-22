@@ -1,35 +1,34 @@
 //
-//  SKServerSocketManager.m
+//  SKSocketServerManager.m
 //  Server_Socket
 //
-//  Created by KUN on 2017/8/21.
+//  Created by KUN on 2017/8/22.
 //  Copyright © 2017年 lemon. All rights reserved.
 //
 
-#import "SKServerSocketManager.h"
+#import "SKSocketServerManager.h"
+#import "SKSocketServerConnection.h"
 #import "GCDAsyncSocket.h"
-#import "SKServerSocketConnection.h"
 
-
-@interface SKServerSocketManager () <GCDAsyncSocketDelegate, SKServerSocketConnectionDelegate>
+@interface SKSocketServerManager () <GCDAsyncSocketDelegate, SKSocketServerConnectionDelegate>
 
 @property (nonatomic, strong) GCDAsyncSocket *tcpSocket;
 
 @property (nonatomic, strong) dispatch_queue_t socketQueue;
 
-@property (nonatomic, strong, readwrite) NSMutableArray <SKServerSocketConnection *> *connectedSockets;
+@property (nonatomic, strong, readwrite) NSMutableArray <SKSocketServerConnection *> *connections;
 
 @end
 
 
-@implementation SKServerSocketManager
+@implementation SKSocketServerManager
 
-+ (SKServerSocketManager *)sharedServerManager {
++ (SKSocketServerManager *)sharedServerManager {
     
-    static SKServerSocketManager *manager;
+    static SKSocketServerManager *manager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manager = [[SKServerSocketManager alloc] init];
+        manager = [[SKSocketServerManager alloc] init];
     });
     return manager;
 }
@@ -40,25 +39,25 @@
         
         _socketQueue = dispatch_queue_create("tcpSocketQueue", NULL);
         _tcpSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:_socketQueue];
-      
-        _connectedSockets = [[NSMutableArray alloc] initWithCapacity:1];
-
+        
+        _connections = [[NSMutableArray alloc] initWithCapacity:1];
+        
     }
     return self;
 }
 
 - (void)startAccept {
-
+    
     NSError *error = nil;
     [_tcpSocket acceptOnInterface:self.listenAddress port:self.port error:&error];
     
     if (error) {
         NSLog(@"监听失败:%@",error);
-
+        
     } else {
         NSLog(@"监听成功:%@",error);
         NSLog(@"tcp server started on port %hu", [_tcpSocket localPort]);
-
+        
     }
 }
 
@@ -66,7 +65,7 @@
 #pragma mark -- GCDAsyncSocketDelegate
 
 - (nullable dispatch_queue_t)newSocketQueueForConnectionFromAddress:(NSData *)address onSocket:(GCDAsyncSocket *)sock {
-
+    
     DDLog(@"newSocketQueueForConnectionFromAddress");
     return _socketQueue;
 }
@@ -74,12 +73,11 @@
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket;{
     DDLog(@"didAcceptNewSocket");
     
-    @synchronized (_connectedSockets) {
+    @synchronized (_connections) {
         
-        SKServerSocketConnection *connection = [[SKServerSocketConnection alloc] initWithAsyncSocket:newSocket configQueue:self.socketQueue];
+        SKSocketServerConnection *connection = [[SKSocketServerConnection alloc] initWithAsyncSocket:newSocket configQueue:self.socketQueue];
         connection.delegate = self;
-        
-        [_connectedSockets addObject:connection];
+        [_connections addObject:connection];
         
         [connection start];
     }
@@ -88,7 +86,7 @@
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port {
     DDLog(@"host = %@,port = %d",host,port);
-
+    
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToUrl:(NSURL *)url {
@@ -97,28 +95,28 @@
 
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
-
+    
     DDLog(@"didReadData tag = %ld",tag);
     [sock readDataWithTimeout:-1 tag:tag];
-
+    
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
-
+    
     DDLog(@"partialLength = %ld ,tag = %ld",partialLength ,tag);
-
+    
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag {
-
+    
     DDLog(@"didWriteDataWithTag tag = %ld" ,tag);
     
-
+    
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didWritePartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
     DDLog(@"partialLength = %ld ,tag = %ld",partialLength ,tag);
-
+    
 }
 
 
@@ -130,23 +128,22 @@
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(nullable NSError *)err {
     DDLog(@"socketDidDisconnect");
-    [self.connectedSockets removeObject:sock];
+//    [self.connections removeObject:sock];
 }
 
 - (void)socketDidSecure:(GCDAsyncSocket *)sock {
     DDLog(@"socketDidSecure");
-
+    
 }
 
 
 #pragma mark -- SKServerSocketConnectionDelegate
 
-- (void)didDisConnect:(SKServerSocketConnection *)con withError:(NSError *)error {
-
-    @synchronized(_connectedSockets) {
-        [_connectedSockets removeObject:con];
+- (void)didDisConnect:(SKSocketServerConnection *)con withError:(NSError *)error {
+    
+    @synchronized(_connections) {
+        [_connections removeObject:con];
     }
 }
-
 
 @end

@@ -1,24 +1,25 @@
 //
-//  SKServerSocketConnection.m
+//  SKSocketServerConnection.m
 //  Server_Socket
 //
-//  Created by KUN on 2017/8/21.
+//  Created by KUN on 2017/8/22.
 //  Copyright © 2017年 lemon. All rights reserved.
 //
 
-#import "SKServerSocketConnection.h"
+#import "SKSocketServerConnection.h"
 #import "GCDAsyncSocket.h"
 
-@interface SKServerSocketConnection () <GCDAsyncSocketDelegate>
+@interface SKSocketServerConnection () <GCDAsyncSocketDelegate>
 
 @property (nonatomic, strong) GCDAsyncSocket *asyncSocket;
 @property (nonatomic, strong) dispatch_queue_t socketQueue;
 @end
 
-@implementation SKServerSocketConnection
+
+@implementation SKSocketServerConnection
 
 - (instancetype)initWithAsyncSocket:(GCDAsyncSocket *)aSocket configQueue:(dispatch_queue_t)queue {
-
+    
     if (self = [super init]) {
         _socketQueue = queue;
         _asyncSocket = aSocket;
@@ -28,11 +29,11 @@
 }
 
 - (void)start {
-
+    
     NSString *host = [self.asyncSocket connectedHost];
     uint16_t port = [self.asyncSocket connectedPort];
-    NSLog(@"SKServerSocketConnection start %@:%hu", host, port);
-
+    NSLog(@"SKSocketServerConnection start %@:%hu", host, port);
+    
     __weak typeof(self) weakself = self;
     dispatch_async([self socketQueue], ^{
         @autoreleasepool {
@@ -42,7 +43,7 @@
 }
 
 - (void)stop {
-
+    
     __weak typeof(self) weakself = self;
     dispatch_async([self socketQueue], ^{
         @autoreleasepool {
@@ -70,7 +71,7 @@
     NSString *host = [self.asyncSocket connectedHost];
     UInt16 port = [self.asyncSocket connectedPort];
     NSLog(@"[%@:%hu] didReadData length: %lu ,tag :%ld", host, port, (unsigned long)data.length,tag);
-
+    
     [sock writeData:data withTimeout:-1 tag:0];
 }
 

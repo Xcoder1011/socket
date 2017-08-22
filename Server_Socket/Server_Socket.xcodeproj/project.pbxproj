@@ -9,13 +9,14 @@
 /* Begin PBXBuildFile section */
 		BC003A2F1F4A812E00EC8498 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A2B1F4A812E00EC8498 /* GCDAsyncSocket.m */; };
 		BC003A301F4A812E00EC8498 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A2D1F4A812E00EC8498 /* GCDAsyncUdpSocket.m */; };
-		BC003A371F4AA3A300EC8498 /* SKServerSocketConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A361F4AA3A300EC8498 /* SKServerSocketConnection.m */; };
-		BC003A3A1F4AA3C900EC8498 /* SKServerSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC003A391F4AA3C900EC8498 /* SKServerSocketManager.m */; };
 		BC3A93A81F46C59E00B26C1B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3A93A71F46C59E00B26C1B /* AppDelegate.m */; };
 		BC3A93AB1F46C59E00B26C1B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3A93AA1F46C59E00B26C1B /* main.m */; };
 		BC3A93AE1F46C59E00B26C1B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3A93AD1F46C59E00B26C1B /* ViewController.m */; };
 		BC3A93B01F46C59E00B26C1B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC3A93AF1F46C59E00B26C1B /* Assets.xcassets */; };
 		BC3A93B31F46C59E00B26C1B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC3A93B11F46C59E00B26C1B /* Main.storyboard */; };
+		BC76810A1F4BD38800BD0F3D /* SKSocketServerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7681091F4BD38800BD0F3D /* SKSocketServerManager.m */; };
+		BC76810D1F4BD3E000BD0F3D /* SKSocketServerConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = BC76810C1F4BD3E000BD0F3D /* SKSocketServerConnection.m */; };
+		BC7681141F4BFB7800BD0F3D /* SKWebSocketServerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7681131F4BFB7800BD0F3D /* SKWebSocketServerManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,10 +24,6 @@
 		BC003A2B1F4A812E00EC8498 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
 		BC003A2C1F4A812E00EC8498 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
 		BC003A2D1F4A812E00EC8498 /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
-		BC003A351F4AA3A300EC8498 /* SKServerSocketConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKServerSocketConnection.h; sourceTree = "<group>"; };
-		BC003A361F4AA3A300EC8498 /* SKServerSocketConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKServerSocketConnection.m; sourceTree = "<group>"; };
-		BC003A381F4AA3C900EC8498 /* SKServerSocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKServerSocketManager.h; sourceTree = "<group>"; };
-		BC003A391F4AA3C900EC8498 /* SKServerSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKServerSocketManager.m; sourceTree = "<group>"; };
 		BC3A93A31F46C59E00B26C1B /* Server_Socket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Server_Socket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC3A93A61F46C59E00B26C1B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BC3A93A71F46C59E00B26C1B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -36,6 +33,12 @@
 		BC3A93AF1F46C59E00B26C1B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../Assets.xcassets; sourceTree = "<group>"; };
 		BC3A93B21F46C59E00B26C1B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BC3A93B41F46C59E00B26C1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Info.plist; sourceTree = "<group>"; };
+		BC7681081F4BD38800BD0F3D /* SKSocketServerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKSocketServerManager.h; sourceTree = "<group>"; };
+		BC7681091F4BD38800BD0F3D /* SKSocketServerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKSocketServerManager.m; sourceTree = "<group>"; };
+		BC76810B1F4BD3E000BD0F3D /* SKSocketServerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKSocketServerConnection.h; sourceTree = "<group>"; };
+		BC76810C1F4BD3E000BD0F3D /* SKSocketServerConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKSocketServerConnection.m; sourceTree = "<group>"; };
+		BC7681121F4BFB7800BD0F3D /* SKWebSocketServerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWebSocketServerManager.h; sourceTree = "<group>"; };
+		BC7681131F4BFB7800BD0F3D /* SKWebSocketServerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWebSocketServerManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,17 +61,6 @@
 				BC003A2D1F4A812E00EC8498 /* GCDAsyncUdpSocket.m */,
 			);
 			path = GCD;
-			sourceTree = "<group>";
-		};
-		BC003A341F4AA3A300EC8498 /* SKServerSocket */ = {
-			isa = PBXGroup;
-			children = (
-				BC003A381F4AA3C900EC8498 /* SKServerSocketManager.h */,
-				BC003A391F4AA3C900EC8498 /* SKServerSocketManager.m */,
-				BC003A351F4AA3A300EC8498 /* SKServerSocketConnection.h */,
-				BC003A361F4AA3A300EC8498 /* SKServerSocketConnection.m */,
-			);
-			path = SKServerSocket;
 			sourceTree = "<group>";
 		};
 		BC3A939A1F46C59D00B26C1B = {
@@ -94,7 +86,8 @@
 				BC3A93A71F46C59E00B26C1B /* AppDelegate.m */,
 				BC3A93AC1F46C59E00B26C1B /* ViewController.h */,
 				BC3A93AD1F46C59E00B26C1B /* ViewController.m */,
-				BC003A341F4AA3A300EC8498 /* SKServerSocket */,
+				BC76810E1F4BD52200BD0F3D /* SKWebSocketServer */,
+				BC7681071F4BD36500BD0F3D /* SKSocketServer */,
 				BC003A281F4A812E00EC8498 /* GCD */,
 				BC3A93BB1F46C6EC00B26C1B /* Other */,
 				BC3A93A91F46C59E00B26C1B /* Supporting Files */,
@@ -118,6 +111,26 @@
 				BC3A93B41F46C59E00B26C1B /* Info.plist */,
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		BC7681071F4BD36500BD0F3D /* SKSocketServer */ = {
+			isa = PBXGroup;
+			children = (
+				BC7681081F4BD38800BD0F3D /* SKSocketServerManager.h */,
+				BC7681091F4BD38800BD0F3D /* SKSocketServerManager.m */,
+				BC76810B1F4BD3E000BD0F3D /* SKSocketServerConnection.h */,
+				BC76810C1F4BD3E000BD0F3D /* SKSocketServerConnection.m */,
+			);
+			path = SKSocketServer;
+			sourceTree = "<group>";
+		};
+		BC76810E1F4BD52200BD0F3D /* SKWebSocketServer */ = {
+			isa = PBXGroup;
+			children = (
+				BC7681121F4BFB7800BD0F3D /* SKWebSocketServerManager.h */,
+				BC7681131F4BFB7800BD0F3D /* SKWebSocketServerManager.m */,
+			);
+			path = SKWebSocketServer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,11 +204,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC003A2F1F4A812E00EC8498 /* GCDAsyncSocket.m in Sources */,
-				BC003A371F4AA3A300EC8498 /* SKServerSocketConnection.m in Sources */,
+				BC76810D1F4BD3E000BD0F3D /* SKSocketServerConnection.m in Sources */,
 				BC003A301F4A812E00EC8498 /* GCDAsyncUdpSocket.m in Sources */,
+				BC7681141F4BFB7800BD0F3D /* SKWebSocketServerManager.m in Sources */,
+				BC76810A1F4BD38800BD0F3D /* SKSocketServerManager.m in Sources */,
 				BC3A93AE1F46C59E00B26C1B /* ViewController.m in Sources */,
 				BC3A93AB1F46C59E00B26C1B /* main.m in Sources */,
-				BC003A3A1F4AA3C900EC8498 /* SKServerSocketManager.m in Sources */,
 				BC3A93A81F46C59E00B26C1B /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

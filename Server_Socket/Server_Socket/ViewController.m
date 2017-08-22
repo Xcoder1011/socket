@@ -7,7 +7,9 @@
 //
 
 #import "ViewController.h"
-#import "SKServerSocketManager.h"
+#import "SKSocketServerManager.h"
+#import "SKWebSocketServerManager.h"
+
 
 @interface ViewController ()
 
@@ -26,11 +28,13 @@
 
 - (IBAction)acceptBtnDidClick:(NSButton *)sender {
     
-    SKServerSocketManager *serverSocket = [SKServerSocketManager sharedServerManager];
+//    SKSocketServerManager *serverSocket = [SKSocketServerManager sharedServerManager];
+    SKWebSocketServerManager *serverSocket = [SKWebSocketServerManager sharedServerManager];
+
     serverSocket.port = self.portTextField.stringValue.length ?  8888 : [self.portTextField.stringValue intValue];
     serverSocket.listenAddress =self.ipTextField.stringValue.length ?  @"10.22.64.79" : self.ipTextField.stringValue;
     // 开始监听
-    [[SKServerSocketManager sharedServerManager] startAccept];
+    [[SKWebSocketServerManager sharedServerManager] startAccept];
 }
 
 - (void)setRepresentedObject:(id)representedObject {

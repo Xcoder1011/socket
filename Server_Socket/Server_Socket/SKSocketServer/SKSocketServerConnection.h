@@ -1,8 +1,8 @@
 //
-//  SKServerSocketConnection.h
+//  SKSocketServerConnection.h
 //  Server_Socket
 //
-//  Created by KUN on 2017/8/21.
+//  Created by KUN on 2017/8/22.
 //  Copyright © 2017年 lemon. All rights reserved.
 //
 
@@ -15,20 +15,23 @@
 #endif
 
 @class GCDAsyncSocket;
-@class SKServerSocketConnection;
+@class SKSocketServerConnection;
 
-@protocol SKServerSocketConnectionDelegate <NSObject>
+@protocol SKSocketServerConnectionDelegate <NSObject>
 
-- (void)didDisConnect:(SKServerSocketConnection *)con withError:(NSError *)error;
+- (void)didDisConnect:(SKSocketServerConnection *)con withError:(NSError *)error;
 
 @end
 
-@interface SKServerSocketConnection : NSObject
 
-@property (nonatomic , weak) id<SKServerSocketConnectionDelegate>delegate;
+@interface SKSocketServerConnection : NSObject
+
+@property (nonatomic , weak) id<SKSocketServerConnectionDelegate>delegate;
 
 - (instancetype)initWithAsyncSocket:(GCDAsyncSocket *)aSocket configQueue:(dispatch_queue_t)queue;
 
 - (void)start;
 - (void)stop;
+
+
 @end
