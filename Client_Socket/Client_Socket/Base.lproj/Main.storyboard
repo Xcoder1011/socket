@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,12 +21,55 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="z3J-cX-K4j">
+                                <rect key="frame" x="16" y="28" width="295" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="kiB-69-BxO"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rhw-mS-MRT">
+                                <rect key="frame" x="319" y="28" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="HIq-nW-oPr"/>
+                                    <constraint firstAttribute="height" constant="30" id="TdT-KQ-6DB"/>
+                                </constraints>
+                                <state key="normal" title="send"/>
+                                <connections>
+                                    <action selector="sendAct:" destination="BYZ-38-t0r" eventType="touchUpInside" id="A04-gR-6ZT"/>
+                                </connections>
+                            </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="eKQ-aV-zEk">
+                                <rect key="frame" x="0.0" y="80" width="375" height="587"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="eKQ-aV-zEk" secondAttribute="trailing" id="0nb-oP-wGb"/>
+                            <constraint firstItem="z3J-cX-K4j" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="59u-PL-ywX"/>
+                            <constraint firstItem="eKQ-aV-zEk" firstAttribute="top" secondItem="Rhw-mS-MRT" secondAttribute="bottom" constant="22" id="5gt-pj-Fkg"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="eKQ-aV-zEk" secondAttribute="bottom" id="BoD-nZ-604"/>
+                            <constraint firstItem="eKQ-aV-zEk" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="LiI-1J-6Ze"/>
+                            <constraint firstItem="Rhw-mS-MRT" firstAttribute="leading" secondItem="z3J-cX-K4j" secondAttribute="trailing" constant="8" id="WnT-ng-Fdk"/>
+                            <constraint firstAttribute="trailing" secondItem="Rhw-mS-MRT" secondAttribute="trailing" constant="10" id="XPG-SD-sdP"/>
+                            <constraint firstItem="Rhw-mS-MRT" firstAttribute="centerY" secondItem="z3J-cX-K4j" secondAttribute="centerY" id="ZnF-EW-NeX"/>
+                            <constraint firstItem="z3J-cX-K4j" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="ZqX-lE-d9I"/>
+                            <constraint firstItem="Rhw-mS-MRT" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="xcA-x9-sw9"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="inputTextF" destination="z3J-cX-K4j" id="6kl-Wv-0uz"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-79" y="141"/>
+            <point key="canvasLocation" x="-79.200000000000003" y="139.880059970015"/>
         </scene>
     </scenes>
 </document>

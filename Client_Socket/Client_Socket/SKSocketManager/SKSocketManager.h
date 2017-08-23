@@ -11,18 +11,24 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #if DEBUG
-static NSString * HOST = @"10.22.64.79";
+static NSString * HOST = @"10.22.64.86";
 static const int PORT = 8888;
 #else
-static NSString * HOST = @"10.22.64.79";
+static NSString * HOST = @"10.22.64.86";
 static const int PORT = 7070;
 #endif
+
+static NSTimeInterval TimeOut = -1;        // 超时时间, 超时会关闭 socket
+static NSTimeInterval HeartBeatRate = 1;   // 💖心跳频率
+static NSInteger  HeartBeatMaxLostCount = 3;   // 最大心跳丢失数
+static NSString  *HeartBeatIdentifier = @"HeartBeatIdentifier";   // 心跳标识
+
 
 typedef enum : NSUInteger {
     
     ConnectStatus_UnConnected  = 0,  //未连接
     ConnectStatus_Connected    = 1,  //已连接
-    ConnectStatus_Connectting  = 2,  //连接中
+    ConnectStatus_Connecting  = 2,  //连接中
     
 } ConnectStatus;
 
@@ -41,7 +47,6 @@ typedef enum : NSUInteger {
 
 @end
 
-
 @interface SKSocketManager : NSObject
 
 /* 连接状态 **/
@@ -53,9 +58,12 @@ typedef enum : NSUInteger {
 
 - (void)connect;
 
-- (void)connectAutomatic:(void (^)())completion;
-
 - (void)connectWithIp:(nonnull NSString * )ip port:(UInt16)port;
+
+// Send a UTF8 String or Data.
+- (void)sendData:(id)data;
+
+- (void)disConnect;
 
 
 @end

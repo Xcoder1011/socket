@@ -64,11 +64,6 @@
 
 #pragma mark -- GCDAsyncSocketDelegate
 
-- (nullable dispatch_queue_t)newSocketQueueForConnectionFromAddress:(NSData *)address onSocket:(GCDAsyncSocket *)sock {
-    
-    DDLog(@"newSocketQueueForConnectionFromAddress");
-    return _socketQueue;
-}
 
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket;{
     DDLog(@"didAcceptNewSocket");
@@ -128,7 +123,8 @@
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(nullable NSError *)err {
     DDLog(@"socketDidDisconnect");
-//    [self.connections removeObject:sock];
+    //每当有客户端断开连接的时候，客户端数组移除该socket
+//    [self.clientSockets removeObject:sock];
 }
 
 - (void)socketDidSecure:(GCDAsyncSocket *)sock {

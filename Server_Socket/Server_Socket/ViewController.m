@@ -28,13 +28,13 @@
 
 - (IBAction)acceptBtnDidClick:(NSButton *)sender {
     
-//    SKSocketServerManager *serverSocket = [SKSocketServerManager sharedServerManager];
-    SKWebSocketServerManager *serverSocket = [SKWebSocketServerManager sharedServerManager];
+    SKSocketServerManager *serverSocket = [SKSocketServerManager sharedServerManager];
+//    SKWebSocketServerManager *serverSocket = [SKWebSocketServerManager sharedServerManager];
 
-    serverSocket.port = self.portTextField.stringValue.length ?  8888 : [self.portTextField.stringValue intValue];
-    serverSocket.listenAddress =self.ipTextField.stringValue.length ?  @"10.22.64.79" : self.ipTextField.stringValue;
+    serverSocket.port = self.portTextField.stringValue.length == 0 ?  8888 : [self.portTextField.stringValue intValue];
+    serverSocket.listenAddress =self.ipTextField.stringValue.length == 0 ?  @"10.22.64.86" : self.ipTextField.stringValue;
     // 开始监听
-    [[SKWebSocketServerManager sharedServerManager] startAccept];
+    [[SKSocketServerManager sharedServerManager] startAccept];
 }
 
 - (void)setRepresentedObject:(id)representedObject {

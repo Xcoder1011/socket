@@ -7,8 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "SKSocketManager.h"
+
 
 @interface ViewController ()
+@property (weak, nonatomic) IBOutlet UITextField *inputTextF;
 
 @end
 
@@ -16,6 +19,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [[SKSocketManager sharedInstance] connect];
+}
+// 发送
+- (IBAction)sendAct:(UIButton *)sender {
+
+    [[SKSocketManager sharedInstance] sendData:self.inputTextF.text];
 }
 
 @end
