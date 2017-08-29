@@ -11,10 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #if DEBUG
-static NSString * HOST = @"10.22.64.86";
+static NSString * HOST = @"10.22.64.148";
 static const int PORT = 8888;
 #else
-static NSString * HOST = @"10.22.64.86";
+static NSString * HOST = @"10.22.64.148";
 static const int PORT = 7070;
 #endif
 

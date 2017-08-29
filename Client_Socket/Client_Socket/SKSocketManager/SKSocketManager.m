@@ -10,7 +10,7 @@
 #import "GCDAsyncSocket.h"
 
 #ifdef DEBUG
-# define DDLog(format, ...) NSLog((@"[文件名:%s]" "[函数名:%s]" "[行号:%d]" format), __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__);
+# define DDLog(format, ...) NSLog((@"[函数名:%s]" "[行号:%d]" format), __FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
 # define DDLog(...);
 #endif
@@ -79,6 +79,7 @@
             [self.delegate socketConnectFailueWithError:error];
         }
         
+        
     } else {
         NSLog(@"connect success on port %hu", [_tcpSocket localPort]);
     }
@@ -98,6 +99,7 @@
         if ([data isKindOfClass:[NSString class]]) {
             
             NSData *requestData = [data dataUsingEncoding:NSUTF8StringEncoding];
+            // 1.
             [self.tcpSocket writeData:requestData withTimeout:TimeOut tag:0];
             [self.tcpSocket readDataToData:[GCDAsyncSocket CRLFData] withTimeout:TimeOut maxLength:0 tag:0];
             
@@ -200,7 +202,7 @@
 // 接收到消息
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
     
-    DDLog(@"didReadData tag = %ld",tag);
+    DDLog(@"client didReadData tag = %ld",tag);
     
     dispatch_async(self.receiveQueue, ^{
         // 转为明文
@@ -216,21 +218,28 @@
     
     [self.tcpSocket readDataWithTimeout:TimeOut tag:tag];
 
-    
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 - (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
     
-    DDLog(@"partialLength = %ld ,tag = %ld",(unsigned long)partialLength ,tag);
-    
+    // 4.
+    DDLog(@"client didReadPartialDataOfLength = %ld ,tag = %ld",(unsigned long)partialLength ,tag);
+    // client didReadPartialDataOfLength = 3 ,tag = 0
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag {
     
-    DDLog(@"didWriteDataWithTag tag = %ld" ,tag);
-    
+    // 2.1
+    DDLog(@"client didWriteDataWithTag tag = %ld" ,tag);
+    // client didWriteDataWithTag tag = 0
     
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 - (void)socket:(GCDAsyncSocket *)sock didWritePartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
     DDLog(@"partialLength = %ld ,tag = %ld",(unsigned long)partialLength ,tag);
