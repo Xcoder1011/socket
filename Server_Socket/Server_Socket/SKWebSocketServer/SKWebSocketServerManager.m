@@ -127,6 +127,23 @@
     
     DDLog(@"didReadData tag = %ld",tag);
 //    [sock readDataWithTimeout:-1 tag:tag];
+//    
+    dispatch_async(self.socketQueue, ^{
+        // 转为明文
+        
+        NSError *error = nil;
+        id response = [NSJSONSerialization JSONObjectWithData:data
+                                                          options:NSJSONReadingMutableContainers
+                                                            error:&error];
+        NSLog(@"response = %@",response);
+        
+        NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        //        // 去除'\n'
+//        str  = [str stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+        
+        NSLog(@"server didReadData = %@",str);
+        
+    });
     
     @try {
         const unsigned char *bytes = data.bytes;

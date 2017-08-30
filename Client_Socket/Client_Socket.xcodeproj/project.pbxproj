@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0793E6362ACD9FDEBF2220AA /* Pods_Client_Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D32DE9C0C7FB0998816C3FD /* Pods_Client_Socket.framework */; };
+		BC6163F21F56893000BE35DB /* SKWebSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC6163F11F56893000BE35DB /* SKWebSocketManager.m */; };
 		BC7681231F4C202D00BD0F3D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7681221F4C202D00BD0F3D /* main.m */; };
 		BC7681261F4C202D00BD0F3D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7681251F4C202D00BD0F3D /* AppDelegate.m */; };
 		BC7681291F4C202D00BD0F3D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7681281F4C202D00BD0F3D /* ViewController.m */; };
@@ -20,6 +21,9 @@
 /* Begin PBXFileReference section */
 		84840AF26507C8153A126076 /* Pods-Client_Socket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Client_Socket.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Client_Socket/Pods-Client_Socket.debug.xcconfig"; sourceTree = "<group>"; };
 		9D32DE9C0C7FB0998816C3FD /* Pods_Client_Socket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Client_Socket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC6163F01F56893000BE35DB /* SKWebSocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWebSocketManager.h; sourceTree = "<group>"; };
+		BC6163F11F56893000BE35DB /* SKWebSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWebSocketManager.m; sourceTree = "<group>"; };
+		BC6163F31F56895C00BE35DB /* SKSocketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKSocketHeader.h; sourceTree = "<group>"; };
 		BC76811E1F4C202D00BD0F3D /* Client_Socket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Client_Socket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC7681221F4C202D00BD0F3D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BC7681241F4C202D00BD0F3D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -81,7 +85,6 @@
 				BC7681271F4C202D00BD0F3D /* ViewController.h */,
 				BC7681281F4C202D00BD0F3D /* ViewController.m */,
 				BC7681391F4C3A1100BD0F3D /* SKSocketManager */,
-				BC7681381F4C2A5200BD0F3D /* SKWebSocketManager */,
 				BC7681211F4C202D00BD0F3D /* Supporting Files */,
 			);
 			path = Client_Socket;
@@ -99,18 +102,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		BC7681381F4C2A5200BD0F3D /* SKWebSocketManager */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = SKWebSocketManager;
-			sourceTree = "<group>";
-		};
 		BC7681391F4C3A1100BD0F3D /* SKSocketManager */ = {
 			isa = PBXGroup;
 			children = (
+				BC6163F31F56895C00BE35DB /* SKSocketHeader.h */,
 				BC76813A1F4C3B0200BD0F3D /* SKSocketManager.h */,
 				BC76813B1F4C3B0200BD0F3D /* SKSocketManager.m */,
+				BC6163F01F56893000BE35DB /* SKWebSocketManager.h */,
+				BC6163F11F56893000BE35DB /* SKWebSocketManager.m */,
 			);
 			path = SKSocketManager;
 			sourceTree = "<group>";
@@ -249,6 +248,7 @@
 			files = (
 				BC7681291F4C202D00BD0F3D /* ViewController.m in Sources */,
 				BC7681261F4C202D00BD0F3D /* AppDelegate.m in Sources */,
+				BC6163F21F56893000BE35DB /* SKWebSocketManager.m in Sources */,
 				BC76813C1F4C3B0200BD0F3D /* SKSocketManager.m in Sources */,
 				BC7681231F4C202D00BD0F3D /* main.m in Sources */,
 			);

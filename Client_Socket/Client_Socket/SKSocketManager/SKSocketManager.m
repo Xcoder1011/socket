@@ -9,13 +9,6 @@
 #import "SKSocketManager.h"
 #import "GCDAsyncSocket.h"
 
-#ifdef DEBUG
-# define DDLog(format, ...) NSLog((@"[函数名:%s]" "[行号:%d]" format), __FUNCTION__, __LINE__, ##__VA_ARGS__);
-#else
-# define DDLog(...);
-#endif
-
-
 @interface SKSocketManager () <GCDAsyncSocketDelegate>
 
 @property (nonatomic, strong) GCDAsyncSocket   *tcpSocket;

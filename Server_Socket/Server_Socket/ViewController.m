@@ -24,17 +24,64 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self testWebSocketServer];
 }
 
 - (IBAction)acceptBtnDidClick:(NSButton *)sender {
     
     SKSocketServerManager *serverSocket = [SKSocketServerManager sharedServerManager];
-//    SKWebSocketServerManager *serverSocket = [SKWebSocketServerManager sharedServerManager];
-
     serverSocket.port = self.portTextField.stringValue.length == 0 ?  8888 : [self.portTextField.stringValue intValue];
     serverSocket.listenAddress =self.ipTextField.stringValue.length == 0 ?  @"10.22.64.148" : self.ipTextField.stringValue;
     // 开始监听
     [[SKSocketServerManager sharedServerManager] startAccept];
+}
+
+//  测试 websocket server
+- (void)testWebSocketServer {
+
+    SKWebSocketServerManager *serverSocket = [SKWebSocketServerManager sharedServerManager];
+    serverSocket.port = self.portTextField.stringValue.length == 0 ?  8888 : [self.portTextField.stringValue intValue];
+    serverSocket.listenAddress =self.ipTextField.stringValue.length == 0 ?  @"10.22.64.148" : self.ipTextField.stringValue;
+    [serverSocket startAccept];
+
+}
+
+
+
+- (void)webSocketServer:(SKWebSocketServerManager *)server didAcceptNewConnection:(GCDAsyncSocket *)newConnection {
+
+    NSLog(@"didAcceptNewConnection");
+}
+
+- (void)webSocketServer:(SKWebSocketServerManager *)server clientDidDisconnect:(GCDAsyncSocket *)connection withError:(NSError *)err {
+    NSLog(@"clientDidDisconnect ERROR = %@",err);
+
+}
+
+- (void)webSocketServer:(SKWebSocketServerManager *)server didReceiveData:(NSData *)data fromConnection:(GCDAsyncSocket *)connection {
+    
+    NSLog(@"didReceiveData");
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        // 去除'\n'
+        str  = [str stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+        NSLog(@"server didReadData = %@",str );
+    });
+
+}
+
+- (void)webSocketServer:(SKWebSocketServerManager *)server couldNotParseRawData:(NSData *)data fromConnection:(GCDAsyncSocket *)connection withError:(NSError *)err {
+    
+    NSLog(@"couldNotParseRawData");
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        // 去除'\n'
+        str  = [str stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+        NSLog(@"server couldNotParseRawData = %@",str );
+    });
 }
 
 - (void)setRepresentedObject:(id)representedObject {
