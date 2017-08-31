@@ -183,8 +183,7 @@
     } else {
         
         //发送心跳
-        NSData *beatData = [[HeartBeatIdentifier stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding];
-        [self.webSocket sendPing:beatData];
+        [self sendData:HeartBeatIdentifier];
         NSLog(@"heart beat send ...");
     }
 }
@@ -302,8 +301,12 @@
                 
             } else {
                 //发送心跳
-                NSData *beatData = [[HeartBeatIdentifier stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding];
-                [self.webSocket sendPing:beatData];
+//                NSData *beatData = [[HeartBeatIdentifier stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding];
+                
+//                NSData *beatData = [HeartBeatIdentifier dataUsingEncoding:NSUTF8StringEncoding];
+
+//                [self.webSocket sendPing:beatData];
+                [self.webSocket send:HeartBeatIdentifier];
                 NSLog(@"heart beat send ...");
             }
         });
@@ -360,7 +363,7 @@
         receivedStr  = [receivedStr stringByReplacingOccurrencesOfString:@"\n" withString:@""];
         NSLog(@"didReadData receivedStr = %@",receivedStr);
         
-        _heartBeatTimer = 0;
+        _heartBeatSentCount = 0;
         
         /*
         2017-08-30 16:23:15.579 Client_Socket[18495:3710209] Websocket Connected
