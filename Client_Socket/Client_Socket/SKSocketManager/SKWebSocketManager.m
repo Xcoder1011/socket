@@ -8,26 +8,26 @@
 
 #import "SKWebSocketManager.h"
 #import <SocketRocket/SocketRocket.h>
+#import "SKMulticastDelegate.h"
 
 @interface SKWebSocketManager () <SRWebSocketDelegate>
+{
+    void *websocketQueueTag;
+    NSMutableArray *_delegateNodes;
+    SKMulticastDelegate <SKWebSocketManagerDelegate> *_multicastDelegate;
+}
 
 @property (nonatomic, strong) SRWebSocket   *webSocket;
-
+@property (nonatomic, strong) dispatch_queue_t  websocketQueue;
 @property (nonatomic, strong) dispatch_queue_t  sendQueue;  // 发送数据串行队列
 @property (nonatomic, strong) dispatch_queue_t  receiveQueue; // 接收数据串行队列
-@property (nonatomic, strong) dispatch_queue_t  heartTimerSerialQueue;
-
-@property (nonatomic, strong) dispatch_source_t  heartBeatTimer;
 
 @property (nonatomic, strong) NSTimer *heartTimer;  // 心跳定时器
 @property (nonatomic, strong) NSTimer *reconnectTimer;  // 重连定时器
 
-
 @property (nonatomic, strong) NSString *ip;
 @property (nonatomic, assign) UInt16 port;
-
 @property (nonatomic, copy) void(^reconnectBlock)(bool success);
-
 
 @end
 
@@ -45,11 +45,17 @@
 
 - (instancetype)init {
     if (self = [super init]) {
+        websocketQueueTag = &websocketQueueTag;
+        _websocketQueue = dispatch_queue_create("com.websocketQueue", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_set_specific(_websocketQueue, websocketQueueTag, websocketQueueTag, NULL);
         _sendQueue = dispatch_queue_create("com.sendQueue", DISPATCH_QUEUE_SERIAL);
         _receiveQueue = dispatch_queue_create("com.receiveQueue", DISPATCH_QUEUE_SERIAL);
+        
         self.connectStatus = ConnectStatus_UnConnected;
         _heartbeatEnabled = YES;
         _autoReconnect = YES;
+        _multicastDelegate = (SKMulticastDelegate <SKWebSocketManagerDelegate> *)[[SKMulticastDelegate alloc] init];
+        _delegateNodes = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -60,7 +66,7 @@
 }
 
 - (void)connectWithHost:(nonnull NSString *)host {
-
+    
     if (self.connectStatus != ConnectStatus_UnConnected) {
         NSLog(@"socket did connect, not need connect again!");
         return;
@@ -68,23 +74,29 @@
     self.connectStatus = ConnectStatus_Connecting;
     self.socketHost = host;
     
-    self.webSocket = [[SRWebSocket alloc]initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:host]]];
-
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:host] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
+    [request addValue:@"1234567" forHTTPHeaderField:@"token"];
+    [request addValue:@"13" forHTTPHeaderField:@"build"];
+    [request addValue:@"1.0" forHTTPHeaderField:@"version"];
+    [request addValue:@"ios" forHTTPHeaderField:@"osType"];
+    self.webSocket = [[SRWebSocket alloc]initWithURLRequest:request];
+    //self.webSocket = [[SRWebSocket alloc]initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:host]]];
     self.webSocket.delegate = self;
     [self.webSocket open];
     
-    self.connectStatus = ConnectStatus_Connecting;
-
 }
 
 - (void)reconnect:(nullable void(^)(bool success))block {
-
-//    _webSocket.delegate = nil;
-//    [_webSocket close];
     
     [self disConnect];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:self.socketHost] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
     
-    _webSocket = [[SRWebSocket alloc]initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.socketHost]]];
+    [request addValue:@"1234567" forHTTPHeaderField:@"token"];
+    [request addValue:@"13" forHTTPHeaderField:@"build"];
+    [request addValue:@"1.0" forHTTPHeaderField:@"version"];
+    [request addValue:@"ios" forHTTPHeaderField:@"osType"];
+    self.webSocket = [[SRWebSocket alloc]initWithURLRequest:request];
+    // _webSocket = [[SRWebSocket alloc]initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.socketHost]]];
     _webSocket.delegate = self;
     [_webSocket open];
     self.connectStatus = ConnectStatus_Connecting;
@@ -99,26 +111,34 @@
 - (void)sendData:(id)data {
     
     __weak typeof(self) weakself = self;
-    
     data = [data copy];
     dispatch_async(self.sendQueue, ^{
+        __strong typeof(weakself) self = weakself;
         
         if (self.webSocket == nil || self.webSocket.readyState == SR_CLOSED || self.webSocket.readyState == SR_CLOSING) { // 重新连接
-            
             [self reconnect:^(bool success) {
-               
                 [weakself sendData:data];
             }];
+            return ;
         }
         
         if (self.webSocket == nil || self.webSocket.readyState == SR_CONNECTING) { // 重新连接
+            NSLog(@"正在连接中....");
+            [self reconnect:^(bool success) {
+                [weakself sendData:data];
+            }];
             return ;
         }
+        
+        if (self.webSocket.readyState != SR_OPEN) {
+            return;
+        }
+        
         if ([data isKindOfClass:[NSString class]]) {
-
+            
             NSData *requestData = [data dataUsingEncoding:NSUTF8StringEncoding];
             [self.webSocket send:requestData];
-
+            
         } else if ([data isKindOfClass:[NSData class]]) {
             
             [self.webSocket send:data];
@@ -129,28 +149,52 @@
     });
 }
 
+- (void)sendDataWithParam:(NSDictionary *)param block:(nullable void(^)(bool success))result {
+    
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:param options:NSJSONWritingPrettyPrinted error:&error];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    if (error) {
+        if (result) {
+            result(NO);
+        }
+        return;
+    }
+    
+    [self sendData:jsonString];
+    if (result) {
+        result(YES);
+    }
+}
+
+/**
+ 主动断开连接
+ */
+- (void)executeDisConnect {
+    
+    self.offlineStyle = WebSocketOfflineStyle_User;
+    [self disConnect];
+}
+
+/**
+ 网络或者服务器原因 中断
+ */
+- (void)serverInterruption {
+    
+    self.offlineStyle = WebSocketOfflineStyle_NetWork;
+    [self disConnect];
+}
+
 - (void)disConnect {
     
-    __weak typeof(self) weakself = self;
-
-    dispatch_async(self.receiveQueue, ^{
-        @autoreleasepool {
-           
-            if (nil == weakself.webSocket) {
-                return;
-            }
-            
-            [weakself.webSocket close];
-            weakself.webSocket = nil;
-//            weakself.sendQueue = nil;
-//            weakself.receiveQueue = nil;
-            weakself.connectStatus = ConnectStatus_UnConnected;
-            weakself.offlineStyle = WebSocketOfflineStyle_User;
-            _heartBeatSentCount = 0;
-            // 关闭心跳定时器
-            [weakself invalidate];
-        }
-    });
+    if (nil == self.webSocket) {
+        return;
+    }
+    [self.webSocket close];
+    self.webSocket = nil;
+    self.connectStatus = ConnectStatus_UnConnected;
+    _heartBeatSentCount = 0;
+    [self stopHeartbeatTimer];
 }
 
 
@@ -174,16 +218,13 @@
 - (void)heartTimerAct {
     
     _heartBeatSentCount ++;
-    if (_heartBeatSentCount >= HeartBeatMaxLostCount) { // 超过6次未收到服务器心跳 , 置为未连接状态
-        self.reconnectionCount = -1;
-        self.connectStatus = ConnectStatus_UnConnected;
-        
-        //[self disConnect];
+    if (_heartBeatSentCount >= HeartBeatMaxLostCount) { // 超过3次未收到服务器心跳 , 置为未连接状态
+        self.reconnectionCount = 0;
+        [self serverInterruption];
         
     } else {
-        
         //发送心跳
-        [self sendData:HeartBeatIdentifier];
+        [self sendDataWithParam:@{@"data_type":@3} block:nil];
         NSLog(@"heart beat send ...");
     }
 }
@@ -231,21 +272,33 @@
     
     //重连次数超过最大尝试次数，停止
     if (self.reconnectionCount > kConnectMaxCount) {
+        self.reconnectionCount = 0;
         [self stopConnectTimer];
+        [self stopHeartbeatTimer];
+        [self serverInterruption];
+        NSLog(@"重连次数超过最大尝试次数");
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_multicastDelegate webSocketdidReconnectCount:self.reconnectionCount exceedMaxRecordCount:YES];
+        });
+        
         return;
     }
     
-    self.reconnectionCount ++;
+    NSLog(@"第%ld次重新连接。。",self.reconnectionCount);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_multicastDelegate webSocketdidReconnectCount:self.reconnectionCount exceedMaxRecordCount:NO];
+    });
     
-    //重连时间策略
-    if (self.reconnectionCount % 10 == 0) {
-        _connectTimerInterval += kConnectTimerInterval;
-        [self startConnectTimer:_connectTimerInterval];
-    }
+    /*
+     // 重连时间策略 1
+     if (self.reconnectionCount % 10 == 0) {
+     _connectTimerInterval += kConnectTimerInterval;
+     [self startConnectTimer:_connectTimerInterval];
+     }
+     // 重连时间策略 2
+     _connectTimerInterval *= 2;
+     */
     
-    if ([self isConnected]) {
-        return;
-    }
     [self openConnection];
 }
 
@@ -255,8 +308,6 @@
     if ([self isConnected]) {
         return;
     }
-    [self disConnect];
-    
     [self reconnect:nil];
 }
 
@@ -266,7 +317,7 @@
     __block BOOL result = NO;
     __weak typeof(self) weakSelf = self;
     
-    dispatch_sync([self receiveQueue], ^{
+    dispatch_sync([self websocketQueue], ^{
         @autoreleasepool {
             result = weakSelf.connectStatus  == ConnectStatus_Connected ? YES : NO;
         }
@@ -275,70 +326,50 @@
 }
 
 
-#pragma mark -- Depracted
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Configuration
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (dispatch_source_t)heartBeatTimer {
+- (void)addDelegate:(id)delegate delegateQueue:(dispatch_queue_t)delegateQueue
+{
+    if (delegate == nil) return;
+    if (delegateQueue == NULL) return;
     
-    if (!_heartBeatTimer) {
-        _heartTimerSerialQueue = dispatch_queue_create("com.sktimer.targetSerialQueue", DISPATCH_QUEUE_SERIAL);
-        _heartBeatTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _heartTimerSerialQueue);
-        // 1.开始时间
-        dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0.0 * NSEC_PER_SEC);
-        // 2.心跳频率
-        NSTimeInterval minInterval = MAX(5, HeartBeatRate);
-        int64_t intervalInSeconds = (int64_t)(minInterval * NSEC_PER_SEC);
-        // 3.误差（时间精度）
-        int64_t toleranceInSeconds = (int64_t)(0 * NSEC_PER_SEC);
-        dispatch_source_set_timer(_heartBeatTimer, start, intervalInSeconds, toleranceInSeconds);
-        
-        dispatch_source_set_event_handler(_heartBeatTimer, ^{
-            
-            _heartBeatSentCount ++;
-            
-            if (_heartBeatSentCount >= HeartBeatMaxLostCount) { // 超过10次未收到服务器心跳 , 置为未连接状态
-                self.reconnectionCount = -1;
-                [self disConnect];
-                
-            } else {
-                //发送心跳
-//                NSData *beatData = [[HeartBeatIdentifier stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding];
-                
-//                NSData *beatData = [HeartBeatIdentifier dataUsingEncoding:NSUTF8StringEncoding];
-
-//                [self.webSocket sendPing:beatData];
-                [self.webSocket send:HeartBeatIdentifier];
-                NSLog(@"heart beat send ...");
-            }
-        });
-    }
-    return _heartBeatTimer;
+    dispatch_block_t block = ^{
+        [_multicastDelegate addDelegate:delegate delegateQueue:delegateQueue];
+    };
+    
+    if (dispatch_get_specific(websocketQueueTag))
+        block();
+    else
+        dispatch_async(_websocketQueue, block);
 }
 
-// 开启心跳
-- (void)fire {
-    if(self.heartBeatTimer) {
-        dispatch_resume(self.heartBeatTimer);
-    }
+- (void)removeDelegate:(id)delegate delegateQueue:(dispatch_queue_t)delegateQueue
+{
+    // Synchronous operation
+    
+    dispatch_block_t block = ^{
+        [_multicastDelegate removeDelegate:delegate delegateQueue:delegateQueue];
+    };
+    
+    if (dispatch_get_specific(websocketQueueTag))
+        block();
+    else
+        dispatch_sync(_websocketQueue, block);
 }
 
-- (void)invalidate {
+- (void)removeDelegate:(id)delegate
+{
+    // Synchronous operation
     
-    if (self.heartBeatTimer ) {
-        __block dispatch_source_t timer = self.heartBeatTimer;
-        dispatch_async(self.heartTimerSerialQueue, ^{
-            dispatch_source_cancel(timer);
-            timer = nil;
-        });
-    }
-}
-
-- (void)sendHeartBeat {
-    
-    self.reconnectionCount = 0;
-    self.connectStatus = ConnectStatus_Connected;
-    self.connectTimerInterval = kConnectTimerInterval;
-    // 心跳开启
-    [self fire];
+    dispatch_block_t block = ^{
+        [_multicastDelegate removeDelegate:delegate];
+    };
+    if (dispatch_get_specific(websocketQueueTag))
+        block();
+    else
+        dispatch_sync(_websocketQueue, block);
 }
 
 
@@ -346,46 +377,13 @@
 #pragma mark - SRWebSocketDelegate
 ///--------------------------------------
 
-
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message{
-
-    NSLog(@"Received \"%@\"", message);
     
     dispatch_async(self.receiveQueue, ^{
-        
-        NSString *receivedStr = message;
-        
-        NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *messageDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-        NSLog(@"didReadData messageDict = %@",messageDict);
-
-        // 去除'\n'
-        receivedStr  = [receivedStr stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-        NSLog(@"didReadData receivedStr = %@",receivedStr);
-        
-        _heartBeatSentCount = 0;
-        
-        /*
-        2017-08-30 16:23:15.579 Client_Socket[18495:3710209] Websocket Connected
-        2017-08-30 16:23:15.579 Client_Socket[18495:3710209] Received "{'client_id':'7f0000010a8c0000000f'}"
-        2017-08-30 16:23:15.592 Client_Socket[18495:3710631] didReadData messageDict = (null)
-        2017-08-30 16:23:15.592 Client_Socket[18495:3710631] didReadData receivedStr = {'client_id':'7f0000010a8c0000000f'}
-        2017-08-30 16:23:35.184 Client_Socket[18495:3710209] Received "{"type":"ping"}"
-        2017-08-30 16:23:35.184 Client_Socket[18495:3710632] didReadData messageDict = {
-            type = ping;
-        }
-        2017-08-30 16:23:35.185 Client_Socket[18495:3710632] didReadData receivedStr = {"type":"ping"}
-        2017-08-30 16:23:45.189 Client_Socket[18495:3710209] Received "{"type":"ping"}"
-        2017-08-30 16:23:45.189 Client_Socket[18495:3710632] didReadData messageDict = {
-            type = ping;
-        }
-        2017-08-30 16:23:45.189 Client_Socket[18495:3710632] didReadData receivedStr = {"type":"ping"}
-        2017-08-30 16:23:55.199 Client_Socket[18495:3710209] Received "{"type":"ping"}"
-        2017-08-30 16:23:55.200 Client_Socket[18495:3710632] didReadData messageDict = {
-            type = ping;
-        }
-        
-        */
+        [self resetBeatCount];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_multicastDelegate webSocketdidReceiveMessage:message];
+        });
     });
 }
 
@@ -394,11 +392,15 @@
     if (self.reconnectBlock) {
         self.reconnectBlock(true);
     }
-    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_multicastDelegate webSocketDidConnectToSocketHost:self.socketHost];
+    });
+    self.reconnectionCount = 0;
+    [self stopConnectTimer];
+    self.connectStatus = ConnectStatus_Connected;
     if (self.heartbeatEnabled) {
         __weak __typeof(self) weakself = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weakself invalidate];
             [weakself startHeartbeatTimer:HeartBeatRate];
         });
     }
@@ -406,62 +408,31 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error;
 {
-    NSLog(@":( Websocket Failed With Error %@", error);
-    if (self.delegate) {
-        [self.delegate socketConnectFailueWithError:error];
-    }
-    
-    NSLog(@"连接失败");
-    if (self.offlineStyle == WebSocketOfflineStyle_NetWork) {
-        // 服务器掉线，重连
-        
-        [self performSelector:@selector(reconnect:) withObject:nil afterDelay:2];
-        
-    }else if (self.offlineStyle == WebSocketOfflineStyle_User) {
-        // 由用户主动断开，不进行重连
-//        _webSocket = nil;
-        [self disConnect];
-        return;
-    }
-}
-
-
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
-    NSLog(@"WebSocket closed code = %ld ,reason = %@",code,reason);
-    
     self.connectStatus = ConnectStatus_UnConnected;
-    
-    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_multicastDelegate webSocketConnectFailueWithError:error];
+    });
+    // 服务器掉线，重连
     if (self.autoReconnect) {
         __weak __typeof(self) weakself = self;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, _connectTimerInterval), dispatch_get_main_queue(), ^{
             [weakself startConnectTimer:weakself.connectTimerInterval];
         });
     }
+}
+
+// 长连接主动关闭
+- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
+    NSLog(@"WebSocket closed code = %ld ,reason = %@",code,reason);
+    self.connectStatus = ConnectStatus_UnConnected;
+    [self executeDisConnect];
     
-//    if (self.reconnectionCount >= 0 && self.reconnectionCount <= HeartBeatMaxLostCount && self.autoReconnect) {
-//        NSTimeInterval time = pow(2, self.reconnectionCount);
-//        
-//        if (!self.reconnectTimer) {
-//            
-//            self.reconnectTimer = [NSTimer scheduledTimerWithTimeInterval:time
-//                                                                   target:self
-//                                                                 selector:@selector(reconnect:)
-//                                                                 userInfo:HeartBeatIdentifier
-//                                                                  repeats:NO];
-//            [[NSRunLoop mainRunLoop] addTimer:self.reconnectTimer forMode:NSRunLoopCommonModes];
-//        }
-//        self.reconnectionCount++;
-//        
-//    } else {
-//        [self.reconnectTimer invalidate];
-//        self.reconnectTimer = nil;
-//        self.reconnectionCount = 0;
-//    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_multicastDelegate webSocketdidCloseWithCode:code reason:self.offlineStyle];
+    });
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {
-
     NSLog(@"WebSocket received pong");
     _heartBeatSentCount = 0;
 }

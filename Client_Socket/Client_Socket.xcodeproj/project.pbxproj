@@ -16,6 +16,7 @@
 		BC76812E1F4C202D00BD0F3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC76812D1F4C202D00BD0F3D /* Assets.xcassets */; };
 		BC7681311F4C202D00BD0F3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC76812F1F4C202D00BD0F3D /* LaunchScreen.storyboard */; };
 		BC76813C1F4C3B0200BD0F3D /* SKSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC76813B1F4C3B0200BD0F3D /* SKSocketManager.m */; };
+		BCC73E461F761311005C6F29 /* SKMulticastDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC73E451F761311005C6F29 /* SKMulticastDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,8 @@
 		BC7681321F4C202D00BD0F3D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BC76813A1F4C3B0200BD0F3D /* SKSocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKSocketManager.h; sourceTree = "<group>"; };
 		BC76813B1F4C3B0200BD0F3D /* SKSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKSocketManager.m; sourceTree = "<group>"; };
+		BCC73E441F761311005C6F29 /* SKMulticastDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMulticastDelegate.h; sourceTree = "<group>"; };
+		BCC73E451F761311005C6F29 /* SKMulticastDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMulticastDelegate.m; sourceTree = "<group>"; };
 		E17BC3BC3FF9F85206944956 /* Pods-Client_Socket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Client_Socket.release.xcconfig"; path = "Pods/Target Support Files/Pods-Client_Socket/Pods-Client_Socket.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -110,6 +113,8 @@
 				BC76813B1F4C3B0200BD0F3D /* SKSocketManager.m */,
 				BC6163F01F56893000BE35DB /* SKWebSocketManager.h */,
 				BC6163F11F56893000BE35DB /* SKWebSocketManager.m */,
+				BCC73E441F761311005C6F29 /* SKMulticastDelegate.h */,
+				BCC73E451F761311005C6F29 /* SKMulticastDelegate.m */,
 			);
 			path = SKSocketManager;
 			sourceTree = "<group>";
@@ -249,6 +254,7 @@
 				BC7681291F4C202D00BD0F3D /* ViewController.m in Sources */,
 				BC7681261F4C202D00BD0F3D /* AppDelegate.m in Sources */,
 				BC6163F21F56893000BE35DB /* SKWebSocketManager.m in Sources */,
+				BCC73E461F761311005C6F29 /* SKMulticastDelegate.m in Sources */,
 				BC76813C1F4C3B0200BD0F3D /* SKSocketManager.m in Sources */,
 				BC7681231F4C202D00BD0F3D /* main.m in Sources */,
 			);

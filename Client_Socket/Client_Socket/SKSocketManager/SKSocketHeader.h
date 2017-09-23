@@ -16,12 +16,12 @@ static const int PORT = 7070;
 #endif
 
 static NSTimeInterval TimeOut = -1;        // 超时时间, 超时会关闭 socket
-static NSTimeInterval HeartBeatRate = 10;   // 💖心跳频率
-static NSInteger  HeartBeatMaxLostCount = 6;   // 最大心跳丢失数
+static NSTimeInterval HeartBeatRate = 5;   // 💖心跳频率
+static NSInteger  HeartBeatMaxLostCount = 3;   // 最大心跳丢失数
 static NSString  *HeartBeatIdentifier = @"heart";   // 心跳标识
 
-static NSTimeInterval kConnectMaxCount = 1000 ; // 最大断开重连次数
-static NSTimeInterval kConnectTimerInterval = 5 ; //重连时间间隔 单位秒s
+static NSTimeInterval kConnectMaxCount = 5 ; // 最大断开重连次数
+static NSTimeInterval kConnectTimerInterval = 3 ; //重连时间间隔 单位秒s
 
 
 typedef enum : NSUInteger {

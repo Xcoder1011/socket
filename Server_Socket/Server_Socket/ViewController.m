@@ -25,7 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self testWebSocketServer];
+    // [self testWebSocketServer];
 }
 
 - (IBAction)acceptBtnDidClick:(NSButton *)sender {

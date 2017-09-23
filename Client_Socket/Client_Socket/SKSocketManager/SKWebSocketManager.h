@@ -13,15 +13,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SKWebSocketManagerDelegate <NSObject>
 
+@optional
 /**
  连接成功
  */
-- (void)socketDidConnectToHost:(NSString *)host port:(uint16_t)port;
+- (void)webSocketDidConnectToSocketHost:(NSString *)host;
 
 /**
  连接失败
  */
-- (void)socketConnectFailueWithError:(NSError *)error;
+- (void)webSocketConnectFailueWithError:(NSError *)error;
+
+
+- (void)webSocketdidReceiveMessage:(id)message;
+
+/**
+ socket 断开连接
+ */
+- (void)webSocketdidCloseWithCode:(NSInteger)code reason:(WebSocketOfflineStyle)offlineStyle;
+
+
+/**
+ socket 自动重连
+ 
+ @param reconectCount 正在重连次数
+ @param exceedMaxRecordCount 是否超过最大重连次数
+ */
+- (void)webSocketdidReconnectCount:(NSInteger)reconectCount exceedMaxRecordCount:(BOOL)exceedMaxRecordCount;
+
 
 @end
 
@@ -34,6 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id <SKWebSocketManagerDelegate> delegate;
 
+- (void)addDelegate:(id)delegate delegateQueue:(dispatch_queue_t)delegateQueue;
+- (void)removeDelegate:(id)delegate delegateQueue:(dispatch_queue_t)delegateQueue;
+- (void)removeDelegate:(id)delegate;
+
 /**
  *  连接后是否自动开启心跳，默认为YES
  */
@@ -45,10 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) NSInteger heartBeatSentCount;  // 发送心跳次数，用于重连
 
-@property (nonatomic, assign) NSInteger reconnectionCount;  // 建连失败重连次数,默认为500次
+@property (nonatomic, assign) NSInteger reconnectionCount;  // 建连失败重连次数5
 
 /**
- *  开始自动重连后，首次重连时间间隔，默认为5秒，后面每常识重连10次增加5秒
+ *  开始自动重连后，首次重连时间间隔，默认为3秒，后面每尝试重连10次增加3秒
  */
 @property (nonatomic, assign) NSTimeInterval connectTimerInterval;
 
@@ -65,9 +88,14 @@ NS_ASSUME_NONNULL_BEGIN
 // Send a UTF8 String or Data.
 - (void)sendData:(id)data;
 
+- (void)sendDataWithParam:(NSDictionary *)param block:(nullable void(^)(bool success))result;
+
 - (void)reconnect:(nullable void(^)(bool success)) block;
 
-- (void)disConnect;
+/**
+ 主动断开连接
+ */
+- (void)executeDisConnect;
 
 /**
  *  重设心跳次数
