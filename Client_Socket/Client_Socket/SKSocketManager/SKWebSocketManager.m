@@ -76,27 +76,20 @@
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:host] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
     [request addValue:@"1234567" forHTTPHeaderField:@"token"];
-    [request addValue:@"13" forHTTPHeaderField:@"build"];
-    [request addValue:@"1.0" forHTTPHeaderField:@"version"];
-    [request addValue:@"ios" forHTTPHeaderField:@"osType"];
     self.webSocket = [[SRWebSocket alloc]initWithURLRequest:request];
-    //self.webSocket = [[SRWebSocket alloc]initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:host]]];
     self.webSocket.delegate = self;
     [self.webSocket open];
     
 }
 
 - (void)reconnect:(nullable void(^)(bool success))block {
-    
+    if (self.socketHost.length == 0) {
+        return;
+    }
     [self disConnect];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:self.socketHost] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
-    
     [request addValue:@"1234567" forHTTPHeaderField:@"token"];
-    [request addValue:@"13" forHTTPHeaderField:@"build"];
-    [request addValue:@"1.0" forHTTPHeaderField:@"version"];
-    [request addValue:@"ios" forHTTPHeaderField:@"osType"];
     self.webSocket = [[SRWebSocket alloc]initWithURLRequest:request];
-    // _webSocket = [[SRWebSocket alloc]initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.socketHost]]];
     _webSocket.delegate = self;
     [_webSocket open];
     self.connectStatus = ConnectStatus_Connecting;
@@ -423,7 +416,6 @@
 
 // 长连接主动关闭
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
-    NSLog(@"WebSocket closed code = %ld ,reason = %@",code,reason);
     self.connectStatus = ConnectStatus_UnConnected;
     [self executeDisConnect];
     
